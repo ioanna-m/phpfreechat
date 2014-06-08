@@ -12,6 +12,13 @@ class Container_messages {
    */
   static public function postMsgToChannel($cid, $uid, $body, $type = 'msg') {
 
+	
+	//Detect Links
+	$body = Container_messages::replaceLinks($body);
+	
+	//Detect Emoticons
+	$body = Container_messages::addEmoticons($body);
+
     $mid = self::generateMid($cid);
     $msg = array(
       'id'        => $mid,
@@ -22,6 +29,7 @@ class Container_messages {
       'timestamp' => time(),
     );
 
+	
     // json encode msg before storing
     $msg = json_encode($msg);
 
@@ -38,6 +46,41 @@ class Container_messages {
     return $msg;
   }
   
+  static public function addEmoticons($body){
+	$emoticons = array();
+	$emoticons[":("] = "face-sad.png";
+	$emoticons[":)"] = "face-smile.png";
+	$emoticons[":D"] = "face-smile-big.png";
+	$emoticons[":o"] = "face-surprise.png";
+	$emoticons[";)"] = "face-wink.png";
+	$emoticons[":*"] = "face-kiss.png";
+	$emoticons[":|"] = "face-plain.png";
+	$emoticons[":'("] = "face-crying.png";
+	  
+	foreach ($emoticons as $face => $img) {
+		$body = str_replace($face,'<img src="../client/emotes/'.$img.'" />',$body);
+	}
+	
+	return $body;
+	  
+  }
+  
+  static public function replaceLinks($body){
+	
+	@preg_match_all('/\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/i', $body, $findings, PREG_PATTERN_ORDER);
+	
+	if((isset($findings))&&(is_array($findings))){
+		$i=0;
+		foreach ($findings[0] as $key => $value) {
+			$i++;
+						
+			$body = str_replace($value,'<a href="http://'.$value.'" target="_blank">Link ['.$i.']</a>',$body);
+		}
+	}
+	return $body;
+	
+  }
+  
   /**
    * Generates a unique message id
    */
@@ -47,4 +90,3 @@ class Container_messages {
   }
 
 }
-

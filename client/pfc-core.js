@@ -270,7 +270,7 @@ var phpFreeChat = (function (pfc, $, window, undefined) {
     }
 
     // add the message to the latest active message group
-    msg.body = $('<pre></pre>').text(msg.body).html();
+    //msg.body = $('<pre></pre>').text(msg.body).html();
     var message = $('<div class="message"></div>').html(msg.body);
     groupmsg_dom.append(message);
 
