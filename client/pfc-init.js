@@ -481,12 +481,43 @@ var phpFreeChat = (function (pfc, $, window, undefined) {
       menu += '<li><a href="#">Remove operator rights</a></li>';
       menu += '<li><a href="#">Kick</a></li>';
       menu += '<li><a href="#">Ban</a></li>';
+	  if( $(this).parent().attr("id") == "user_"+pfc.uid )
+	  {
+		  //User's Menu
+		  //Display change username menu
+	      menu += '<li><a id="changeNickname" href="#">Change Username</a></li>';
+	  }else{
+		  //Other User's Menu
+		  //Don't display change username menu	  
+	  }
       menu += '</ul></div>';
       $(this).append(menu);
+	  
+	  $('#changeNickname').click(function (evt) {
+		  
+		var newName = prompt("Please enter your new nickname", "");
+		
+		if(newName=='')
+		{
+			alert('Your nickname may not be blank.');
+		}
+		else{
+			pfc.renameUser(newName);
+		}
+	  });
+	
     }).live("mouseleave", function () {
       $(".actions-menu").remove();
     });
   };
+  
+  pfc.renameUser = function (newName) {  
+	//1. Send GET Request
+	$.get( "../server/users/"+pfc.uid+"/rename/"+newName+"", function( data ) {
+		//2. Refresh Browser
+		location.reload();
+	});
+  }
 
   /**
    * Load specific javascript defined by the theme
