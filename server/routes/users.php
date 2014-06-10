@@ -83,6 +83,27 @@ $app->get('/users/:uid/pending/', function ($uid) use ($app, $req, $res) {
   $res->body(Container_users::getUserMsgs($uid, true));
 });
 
+/**
+ * Returns user's pending messages
+ */
+$app->get('/users/:uid/rename/:new_name', function ($uid,$new_name) use ($app, $req, $res) {
+
+	$old_user_data = file_get_contents("data/users/".$uid."/index.json");
+	$old_user_data_array = explode('"',$old_user_data);
+	$old_user_data_array[3] = $new_name;
+	
+	$new_user_data = "";
+	foreach ($old_user_data_array as $key => $value) {
+		$new_user_data .= $value.'"';
+	}
+	$new_user_data = substr($new_user_data,0,-1);
+	
+	$file = "data/users/".$uid."/index.json";
+	file_put_contents($file, $new_user_data);
+	
+	exit;
+	
+});
 
 /**
  * Set the close flag (when a user reload or close his window)
