@@ -295,11 +295,34 @@ var phpFreeChat = (function (pfc, $, window, undefined) {
         }
       });
     }
-    
+	
+	/**
+	 * Keep history patch
+	 **/
+    var lastMessages = new Array();
+	var currentMessage = 0;
+	
     // connect the textarea enter key event
     $('.pfc-compose textarea').keydown(function (evt) {
-      if (evt.keyCode == 13 && evt.shiftKey === false) {
+	  if(evt.keyCode == 38){
+		 //Up key has been pressed.
+		 if(currentMessage!=0){
+			$('.pfc-compose textarea').val(lastMessages[--currentMessage]);
+		 }
+	  }
+	  else if(evt.keyCode == 40) {
+		 //Down key has been pressed.
+		 if(currentMessage!=lastMessages.length){
+			$('.pfc-compose textarea').val(lastMessages[++currentMessage]);
+		 }
+	  }
+	  else if (evt.keyCode == 13 && evt.shiftKey === false) {
         pfc.postCommand($('.pfc-compose textarea').val());
+		
+		//Add message to history
+		lastMessages.push($('.pfc-compose textarea').val());
+		currentMessage = lastMessages.length;
+		
         $('.pfc-compose textarea').val('');
         return false;
       }
@@ -518,6 +541,7 @@ var phpFreeChat = (function (pfc, $, window, undefined) {
 		location.reload();
 	});
   }
+
 
   /**
    * Load specific javascript defined by the theme
